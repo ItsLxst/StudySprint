@@ -1,0 +1,1 @@
+# Detailed architectural information will be added as the development process progresses.

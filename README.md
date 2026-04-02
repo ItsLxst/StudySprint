@@ -1,31 +1,22 @@
-# StudySprint 🚀
+# StudySprint
 
-A smart task tracking and productivity application for students.
+## 👥 Team Details
 
-## 📋 What does it do?
-- Add/delete/edit tasks
-- Work with Pomodoro timer
-- View study statistics
-- Analyze productivity
+| Student ID   | Name            | GitHub Username |
+|------------  |-----------------|-----------------|
+| 230513337    | Göknil Bilge    | ItsLxst         |
+| 220513347    | Ecem Ayşe Çınar | ecemaysec       |
+| 220513370    | Ecrin Erez      | ecrinerez       |
 
-## 👥 Team
-- Göknil Bilge - Backend (Python/Flask)
-- Ecem Ayşe Çinar - Frontend (HTML/CSS/JS)
-- Ecrin Erez - Frontend (HTML/CSS/JS)
+---
 
-## 🛠 Technologies
-| Layer | Technology |
-|--------|-----------|
-| Frontend | HTML, CSS, JavaScript |
-| Backend | Python + Flask |
-| Database | SQLite |
-| Architecture | REST API |
+## 📌 Project Introduction
 
-## ✨ Features
-- [ ] User login/register
-- [ ] Task management
-- [ ] Pomodoro timer
-- [ ] Study statistics
-- [ ] Dashboard
+StudySprint is a web-based productivity application designed to help students manage their tasks and improve their study efficiency.  
+The system allows users to create and track tasks, record study sessions, and view basic productivity insights such as completed tasks and study duration.  
 
-## 🚀 Setup (Coming Soon)
+---
+
+## 📋 Architecture
+
+🔗 Click to view architecture: [ARCHITECTURE.md](./ARCHITECTURE.md)
