@@ -1,1 +1,289 @@
-<h1>Frontend Part</h1>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySprint</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">S</div>
+            <h2 class="logo-text">StudySprint</h2>
+        </div>
+        <nav>
+            <ul>
+                <li class="nav-item active" onclick="showPage('dashboard', this)">
+                    <i class="fa-solid fa-table-columns"></i> <span>Dashboard</span>
+                </li>
+                <li class="nav-item" onclick="showPage('tasks', this)">
+                    <i class="fa-solid fa-list-check"></i> <span>Tasks / Focus</span>
+                </li>
+                <li class="nav-item" onclick="showPage('analytics', this)">
+                    <i class="fa-solid fa-chart-line"></i> <span>Analytics</span>
+                </li>
+                <li class="nav-item" onclick="showPage('settings', this)">
+                    <i class="fa-solid fa-gear"></i> <span>Settings</span>
+                </li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="streak-mini">
+                <i class="fa-solid fa-fire"></i> Keep up the streak!
+                <p>You've studied 5 days in a row</p>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="top-bar">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search tasks, notes, or anything...">
+            </div>
+            <div class="user-profile">
+                <div class="user-info">
+                    <span class="user-name">John Doe</span>
+                </div>
+                <div class="user-avatar">JD</div>
+            </div>
+        </header>
+
+        <section id="dashboard" class="page active">
+            <div class="page-header">
+                <h1>Good Evening, John! 👋</h1>
+                <p>Ready to crush your goals today?</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="fa-regular fa-clock"></i></div>
+                    <div class="stat-content">
+                        <h3>3.5</h3>
+                        <p>Focus Hours Today</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="fa-regular fa-circle-check"></i></div>
+                    <div class="stat-content">
+                        <h3>12</h3>
+                        <p>Tasks Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-orange"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="stat-content">
+                        <h3>5 days</h3>
+                        <p>Current Streak</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-purple"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="stat-content">
+                        <h3>+24%</h3>
+                        <p>Weekly Progress</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-row">
+                <div class="focus-today-card">
+                    <div class="card-header"><i class="fa-solid fa-bolt"></i> Focus of the Day</div>
+                    <div class="focus-content">
+                        <h4>Complete Math Assignment</h4>
+                        <p>Finish all calculus problems for Chapter 5 and review integration techniques.</p>
+                        <div class="focus-meta">
+                            <span>Estimated: 2 hours</span>
+                            <span class="due-tag">Due: Today</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upcoming-card">
+                    <div class="card-header"><i class="fa-regular fa-calendar-check"></i> Upcoming Deadlines</div>
+                    <ul class="deadline-list">
+                        <li>
+                            <div class="deadline-info">
+                                <span class="title">Math Assignment - Calculus</span>
+                                <span class="date">April 7, 2026</span>
+                            </div>
+                            <span class="priority high">High</span>
+                        </li>
+                        <li>
+                            <div class="deadline-info">
+                                <span class="title">History Essay Draft</span>
+                                <span class="date">April 10, 2026</span>
+                            </div>
+                            <span class="priority medium">Medium</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="tasks" class="page">
+            <div class="page-header">
+                <h1>Tasks & Focus Session</h1>
+                <p>Stay productive with the Pomodoro technique</p>
+            </div>
+
+            <div class="task-focus-container">
+                <div class="pomodoro-card">
+                    <div class="modes">
+                        <button id="focusBtn" onclick="setMode('focus')" class="active">Focus</button>
+                        <button id="breakBtn" onclick="setMode('break')">Break</button>
+                    </div>
+                    <div class="timer-circle">
+                        <div class="timer-time" id="time">25:00</div>
+                        <p class="timer-label" id="modeText">FOCUS TIME</p>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="btn-start" onclick="startTimer()"><i class="fa-solid fa-play"></i></button>
+                        <button class="btn-reset" onclick="resetTimer()"><i class="fa-solid fa-rotate-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="task-list-card">
+                    <div class="card-header">Your Tasks</div>
+                    <div class="add-task">
+                        <input type="text" id="taskInput" placeholder="Add a new task..." onkeypress="if(event.key === 'Enter') addTask()">
+                        <button onclick="addTask()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <ul class="task-items" id="taskList">
+                        </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="analytics" class="page">
+            <div class="analytics-header">
+                <h1>Analytics Dashboard</h1>
+                <div class="date-filter">Apr 1 - Apr 7, 2026 <i class="fa-solid fa-chevron-down"></i></div>
+            </div>
+
+            <div class="stats-grid-analytics">
+                <div class="stat-card-advanced">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon icon-yellow"><i class="fa-regular fa-clock"></i></div>
+                        <span class="stat-card-title">Focus Hours</span>
+                    </div>
+                    <div class="stat-card-value">29.4</div>
+                    <div class="stat-card-subtext positive">+12% This Week</div>
+                </div>
+                <div class="stat-card-advanced">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon icon-blue"><i class="fa-regular fa-circle-check"></i></div>
+                        <span class="stat-card-title">Tasks Done</span>
+                    </div>
+                    <div class="stat-card-value">34</div>
+                    <div class="stat-card-subtext positive">+2 This Week</div>
+                </div>
+                <div class="stat-card-advanced">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon icon-blue"><i class="fa-solid fa-fire"></i></div>
+                        <span class="stat-card-title">Current Streak</span>
+                    </div>
+                    <div class="stat-card-value">5 days</div>
+                    <div class="stat-card-subtext">Longest: 12d</div>
+                </div>
+                <div class="stat-card-advanced">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon icon-purple"><i class="fa-solid fa-percent"></i></div>
+                        <span class="stat-card-title">Success Rate</span>
+                    </div>
+                    <div class="stat-card-value">92%</div>
+                    <div class="stat-card-subtext positive">+3% This Week</div>
+                </div>
+            </div>
+
+            <div class="charts-grid-analytics">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Weekly Focus Hours</h3>
+                        <p>Your study time over the past 7 days</p>
+                    </div>
+                    <div class="chart-container-wrapper">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Tasks Completed</h3>
+                        <p>Overview of your productivity</p>
+                    </div>
+                    <div class="chart-container-wrapper">
+                        <canvas id="tasksCompletedChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-row-analytics">
+                <div class="goal-progress-card">
+                    <div class="card-header"><i class="fa-solid fa-bullseye"></i> Goal Progress</div>
+                    <div class="goal-progress-body">
+                        <div class="goal-label-row">
+                            <span class="goal-label">Weekly Goal: 30 Hours</span>
+                            <span class="goal-stats">29.4h / 30h</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: 98%;"></div>
+                        </div>
+                        <div class="goal-hint">
+                            <span>Almost there!</span>
+                            <span>0.6h Left</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="focus-distribution-card">
+                    <div class="card-header">Focus Distribution</div>
+                    <div class="donut-wrapper">
+                        <canvas id="focusDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings" class="page">
+            <div class="page-header">
+                <h1>Settings</h1>
+                <p>Customize your experience</p>
+            </div>
+            
+            <div class="settings-grid">
+                <div class="settings-group">
+                    <div class="group-header">Profile</div>
+                    <div class="settings-item">
+                        <label>Full Name</label>
+                        <input type="text" value="John Doe">
+                    </div>
+                    <div class="settings-item">
+                        <label>Email Address</label>
+                        <input type="email" value="john.doe@university.edu">
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="group-header">Timer Configuration</div>
+                    <div class="settings-item">
+                        <label>Focus Duration (min)</label>
+                        <input type="number" id="focusTime" value="25">
+                    </div>
+                    <div class="settings-item">
+                        <label>Break Duration (min)</label>
+                        <input type="number" id="breakTime" value="5">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
