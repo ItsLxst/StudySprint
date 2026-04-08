@@ -390,7 +390,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* --- YOUR TASKS LIST STYLES --- */
+/* --- TASKS LIST STYLES --- */
 .add-task {
     display: flex;
     gap: 12px;
