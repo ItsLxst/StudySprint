@@ -1,25 +1,59 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Analytics</title>
-<link rel="stylesheet" href="css/main.css">
-<link rel="stylesheet" href="css/sidebar.css">
+    <meta charset="UTF-8">
+    <title>StudySprint - Analytics</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body>
-
 <div class="container">
-
-<div id="sidebar"></div>
-<div id="header"></div>
-
-<main class="main">
-    <h1>Analytics</h1>
-</main>
-
+    <div id="sidebar-placeholder"></div>
+    <main class="main">
+        <div id="header-placeholder"></div>
+        <section class="page active">
+            <div class="analytics-header">
+                <h1>Analytics Dashboard</h1>
+                <div class="date-filter">Apr 1 - Apr 7, 2026 <i class="fa-solid fa-chevron-down"></i></div>
+            </div>
+            <div class="stats-grid-analytics">
+                <div class="stat-card-advanced">
+                    <div class="stat-card-header"><div class="stat-card-icon icon-yellow"><i class="fa-regular fa-clock"></i></div><span class="stat-card-title">Focus Hours</span></div>
+                    <div class="stat-card-value">29.4</div><div class="stat-card-subtext positive">+12% This Week</div>
+                </div>
+                <div class="stat-card-advanced">
+                    <div class="stat-card-header"><div class="stat-card-icon icon-blue"><i class="fa-regular fa-circle-check"></i></div><span class="stat-card-title">Tasks Done</span></div>
+                    <div class="stat-card-value">34</div><div class="stat-card-subtext positive">+2 This Week</div>
+                </div>
+            </div>
+            <div class="charts-grid-analytics">
+                <div class="chart-card"><div class="chart-container-wrapper"><canvas id="chart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-container-wrapper"><canvas id="tasksCompletedChart"></canvas></div></div>
+            </div>
+        </section>
+    </main>
 </div>
-
-<script src="js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/loader.js"></script>
+<script>
+window.addEventListener('load', () => {
+    const ctx1 = document.getElementById('chart')?.getContext('2d');
+    if (ctx1) {
+        new Chart(ctx1, {
+            type: 'bar',
+            data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ data: [4, 3, 5, 4, 6, 2, 3], backgroundColor: '#06b6d4', borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    }
+    const ctx2 = document.getElementById('tasksCompletedChart')?.getContext('2d');
+    if (ctx2) {
+        new Chart(ctx2, {
+            type: 'line',
+            data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ data: [3, 5, 2, 6, 8, 4, 5], borderColor: '#06b6d4', fill: true, tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    }
+});
+</script>
 </body>
 </html>

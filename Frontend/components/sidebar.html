@@ -1,9 +1,28 @@
 <aside class="sidebar">
-    <h2>StudySprint</h2>
-    <ul>
-        <li><a href="index.html">Dashboard</a></li>
-        <li><a href="tasks.html">Tasks</a></li>
-        <li><a href="analytics.html">Analytics</a></li>
-        <li><a href="settings.html">Settings</a></li>
-    </ul>
+    <div class="sidebar-header">
+        <div class="logo-icon">S</div>
+        <h2 class="logo-text">StudySprint</h2>
+    </div>
+    <nav>
+        <ul>
+            <li class="nav-item" onclick="location.href='index.html'">
+                <i class="fa-solid fa-table-columns"></i> <span>Dashboard</span>
+            </li>
+            <li class="nav-item" onclick="location.href='tasks.html'">
+                <i class="fa-solid fa-list-check"></i> <span>Tasks / Focus</span>
+            </li>
+            <li class="nav-item" onclick="location.href='analytics.html'">
+                <i class="fa-solid fa-chart-line"></i> <span>Analytics</span>
+            </li>
+            <li class="nav-item" onclick="location.href='settings.html'">
+                <i class="fa-solid fa-gear"></i> <span>Settings</span>
+            </li>
+        </ul>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="streak-mini">
+            <i class="fa-solid fa-fire"></i> Keep up the streak!
+            <p>You've studied 5 days in a row</p>
+        </div>
+    </div>
 </aside>
