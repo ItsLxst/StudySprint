@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tasks</title>
+
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/sidebar.css">
+
+<style>
+/* Timer styling */
+.timer-box {
+    margin-bottom: 30px;
+}
+
+.timer-box h2 {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.timer-box button {
+    padding: 8px 14px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<div id="sidebar"></div>
+<div id="header"></div>
+
+<!-- MAIN -->
+<main class="main">
+
+    <h1>Tasks & Timer</h1>
+
+    <!-- TIMER -->
+    <div class="timer-box">
+        <h2 id="time">25:00</h2>
+
+        <button class="btn-start" onclick="startTimer()">Start</button>
+        <button onclick="resetTimer()">Reset</button>
+    </div>
+
+    <!-- ADD TASK -->
+    <div>
+        <input id="taskInput" placeholder="Enter a new task...">
+        <button onclick="addTask()">Add</button>
+    </div>
+
+    <!-- TASK LIST -->
+    <ul id="taskList"></ul>
+
+</main>
+
+</div>
+
+<!-- SCRIPTS -->
+<script src="js/tasks.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
