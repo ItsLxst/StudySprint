@@ -1,1 +1,61 @@
-<h1>Frontend Part</h1>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySprint - Dashboard</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div id="sidebar-placeholder"></div>
+    <main class="main">
+        <div id="header-placeholder"></div>
+        <section class="page active">
+            <div class="page-header">
+                <h1>Good Evening, John! 👋</h1>
+                <p>Ready to crush your goals today?</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="fa-regular fa-clock"></i></div>
+                    <div class="stat-content"><h3>3.5</h3><p>Focus Hours Today</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="fa-regular fa-circle-check"></i></div>
+                    <div class="stat-content"><h3>12</h3><p>Tasks Completed</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-orange"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="stat-content"><h3>5 days</h3><p>Current Streak</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-purple"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="stat-content"><h3>+24%</h3><p>Weekly Progress</p></div>
+                </div>
+            </div>
+            <div class="dashboard-row">
+                <div class="focus-today-card">
+                    <div class="card-header"><i class="fa-solid fa-bolt"></i> Focus of the Day</div>
+                    <div class="focus-content">
+                        <h4>Complete Math Assignment</h4>
+                        <p>Finish all calculus problems for Chapter 5 and review integration techniques.</p>
+                        <div class="focus-meta"><span>Estimated: 2 hours</span><span class="due-tag">Due: Today</span></div>
+                    </div>
+                </div>
+                <div class="upcoming-card">
+                    <div class="card-header"><i class="fa-regular fa-calendar-check"></i> Upcoming Deadlines</div>
+                    <ul class="deadline-list">
+                        <li><div class="deadline-info"><span class="title">Math Assignment</span><span class="date">April 7, 2026</span></div><span class="priority high">High</span></li>
+                        <li><div class="deadline-info"><span class="title">History Essay</span><span class="date">April 10, 2026</span></div><span class="priority medium">Medium</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="js/loader.js"></script>
+</body>
+</html>
