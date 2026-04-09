@@ -1,427 +1,343 @@
 const API = "http://127.0.0.1:5000";
 
-// Storage helpers
 function getUser() {
-    try { return JSON.parse(localStorage.getItem("ss_user")); } catch { return null; }
+    try {
+        return JSON.parse(localStorage.getItem("ss_user"));
+    } catch {
+        return null;
+    }
 }
-function setUser(u) { localStorage.setItem("ss_user", JSON.stringify(u)); }
-function clearUser() { localStorage.removeItem("ss_user"); }
 
-//Fetch helper 
+function setUser(u) {
+    localStorage.setItem("ss_user", JSON.stringify(u));
+}
+
+function clearUser() {
+    localStorage.removeItem("ss_user");
+}
+
 async function apiFetch(path, opts = {}) {
     const res = await fetch(API + path, {
+        method: opts.method || 'GET',
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         ...opts,
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || res.statusText);
+    if (!res.ok) throw new Error(data.error || "Error");
     return data;
 }
 
-// Auth guard 
-// Runs immediately (IIFE) - redirects to login if not authenticated
 (function authGuard() {
     const page = location.pathname.split("/").pop();
-    const publicPages = ["login.html", "register.html", "login", "register", ""];
+    const publicPages = ["login.html", "register.html", ""];
     if (!getUser() && !publicPages.includes(page)) {
-        location.href = "/login.html";
+        location.href = "login.html";
     }
 })();
 
-//Header patcher
-function watchAndPatchHeader(user) {
-    const initials = (user.username || "?")
-        .split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+function patchUI() {
+    const user = getUser();
+    if (!user) return;
 
-    function applyPatch() {
-        const nameEl   = document.querySelector(".user-name");
-        const avatarEl = document.querySelector(".user-avatar");
-        if (nameEl)   nameEl.textContent   = user.username;
-        if (avatarEl) avatarEl.textContent = initials;
+    const nameElements = document.querySelectorAll(".user-name, #display-name");
+    nameElements.forEach(el => {
+        if (el.textContent !== user.username) {
+            el.textContent = user.username;
+        }
+    });
 
-        // Fix logout button: remove inline onclick, replace with proper handler
-        const logoutBtn = document.querySelector("button[title='Logout']");
-        if (logoutBtn && !logoutBtn.dataset.patched) {
-            logoutBtn.dataset.patched = "1";
-            // Remove the hardcoded onclick that just does location.href='login.html'
-            logoutBtn.removeAttribute("onclick");
-            logoutBtn.addEventListener("click", () => {
-                clearUser();
-                location.href = "/login.html";
-            });
+    const h1 = document.querySelector(".page-header h1");
+    if (h1 && (location.pathname.includes("index.html") || location.pathname.endsWith("/"))) {
+        const hour = new Date().getHours();
+        const greet = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
+        const newText = `${greet}, ${user.username}! 👋`;
+        if (h1.textContent !== newText) {
+            h1.textContent = newText;
         }
     }
 
-    // Watch the header placeholder for when loader.js sets its innerHTML
-    const placeholder = document.getElementById("header-placeholder");
-    if (placeholder) {
-        const observer = new MutationObserver(() => {
-            applyPatch();
-            // Keep observing in case loader re-renders (shouldn't happen, but safe)
-        });
-        observer.observe(placeholder, { childList: true, subtree: true });
+    const avatarElements = document.querySelectorAll(".user-avatar, .profile-avatar-large");
+    let initials = "?";
+    if (user.username) {
+        const parts = user.username.trim().split(/\s+/);
+        if (parts.length === 1) {
+            initials = parts[0].charAt(0).toUpperCase();
+        } else if (parts.length > 1) {
+            initials = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+        }
     }
 
-    // Also try immediately (in case header was already loaded)
-    applyPatch();
+    avatarElements.forEach(el => {
+        if (el.textContent !== initials) {
+            el.textContent = initials;
+        }
+    });
+
+    const logoutBtn = document.querySelector("button[title='Logout']");
+    if (logoutBtn && !logoutBtn.dataset.patched) {
+        logoutBtn.dataset.patched = "true";
+        logoutBtn.removeAttribute("onclick");
+        logoutBtn.onclick = () => {
+            clearUser();
+            location.href = "login.html";
+        };
+    }
 }
 
-// Dashboard (index.html) 
 async function initDashboard() {
     const user = getUser();
     if (!user) return;
-
-    watchAndPatchHeader(user);
-
-    // Dynamic greeting
-    const h1 = document.querySelector(".page-header h1");
-    if (h1) {
-        const hour  = new Date().getHours();
-        const greet = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
-        h1.textContent = `${greet}, ${user.username}! 👋`;
-    }
-
-    // Real stats from backend
+    patchUI();
     try {
         const stats = await apiFetch(`/stats?user_id=${user.id}`);
-        const cards = document.querySelectorAll(".stat-card .stat-content h3");
-        if (cards[0]) cards[0].textContent = (stats.total_study_time_minutes / 60).toFixed(1);
-        if (cards[1]) cards[1].textContent = stats.completed_tasks;
-    } catch (e) { console.warn("Stats:", e.message); }
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        
+        setVal("stat-focus-hours", stats.focus_hours || 0);
+        setVal("stat-tasks-completed", stats.tasks_completed || 0);
+        setVal("stat-streak", (stats.streak || 0) + " days");
+        setVal("stat-progress", (stats.progress >= 0 ? "+" : "") + (stats.progress || 0) + "%");
 
-    // Real tasks: deadlines + focus of day
-    try {
         const tasks = await apiFetch(`/tasks?user_id=${user.id}`);
+        const focusContainer = document.getElementById("focus-task-container");
+        const deadlineList = document.getElementById("deadline-list");
 
-        // Upcoming deadlines
-        const upcoming = tasks
-            .filter(t => !t.completed && t.deadline)
-            .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-            .slice(0, 3);
-
-        const list = document.querySelector(".deadline-list");
-        if (list) {
-            if (upcoming.length) {
-                list.innerHTML = upcoming.map(t => `
-                    <li>
-                        <div class="deadline-info">
-                            <span class="title">${escHtml(t.title)}</span>
-                            <span class="date">${formatDate(t.deadline)}</span>
-                        </div>
-                        <span class="priority ${t.priority}">${cap(t.priority)}</span>
-                    </li>`).join("");
+        if (focusContainer) {
+            const incomplete = tasks.filter(t => !t.completed);
+            if (incomplete.length > 0) {
+                const top = incomplete[0];
+                focusContainer.innerHTML = `<h4>${top.title}</h4><p>Stay focused on this task to complete your daily goal.</p><div class="focus-meta"><span>Estimated: 1 hour</span></div>`;
             } else {
-                list.innerHTML = "<li style='color:var(--text-muted);padding:8px 0'>No upcoming deadlines 🎉</li>";
+                focusContainer.innerHTML = "<p>All tasks completed! Great job.</p>";
             }
         }
 
-        // Focus of the day: first incomplete task
-        const focus = tasks.find(t => !t.completed);
-        if (focus) {
-            const focusTitle = document.querySelector(".focus-content h4");
-            const focusDesc  = document.querySelector(".focus-content p");
-            const focusMeta  = document.querySelector(".focus-meta span");
-            if (focusTitle) focusTitle.textContent = focus.title;
-            if (focusDesc)  focusDesc.textContent  = focus.description || "No description provided.";
-            if (focusMeta && focus.deadline) focusMeta.textContent = `Due: ${formatDate(focus.deadline)}`;
+        if (deadlineList) {
+            deadlineList.innerHTML = tasks.slice(0, 3).map(t => `<li><div class="deadline-info"><span class="title">${t.title}</span></div><span class="priority ${t.completed ? 'medium' : 'high'}">${t.completed ? 'Done' : 'Active'}</span></li>`).join('');
         }
-    } catch (e) { console.warn("Tasks:", e.message); }
+    } catch (e) { console.error(e); }
 }
 
-//Tasks page (tasks.html)
-async function initTasks() {
-    const user = getUser();
-    if (!user) return;
-
-    watchAndPatchHeader(user);
-    await loadTasksFromAPI(user.id);
-}
-
-async function loadTasksFromAPI(userId) {
-    try {
-        const tasks = await apiFetch(`/tasks?user_id=${userId}`);
-        const list  = document.getElementById("taskList");
-        if (!list) return;
-        list.innerHTML = "";
-        tasks.forEach(renderTask);
-    } catch (e) { console.warn("Load tasks:", e.message); }
-}
-
-function renderTask(t) {
-    const list = document.getElementById("taskList");
-    if (!list) return;
-
-    const li = document.createElement("li");
-    li.dataset.id = t.id;
-    li.innerHTML = `
-        <div class="task-main">
-            <input type="checkbox" ${t.completed ? "checked" : ""}>
-            <div class="task-text">
-                <span style="font-weight:500;${t.completed ? "text-decoration:line-through;opacity:.5" : ""}">${escHtml(t.title)}</span>
-                ${t.deadline ? `<small style="color:var(--text-muted);display:block;font-size:0.78rem">Due: ${t.deadline}</small>` : ""}
-            </div>
-        </div>
-        <button class="delete-task"><i class="fa-regular fa-trash-can"></i></button>`;
-
-    // Toggle completed
-    li.querySelector("input[type=checkbox]").addEventListener("change", async function () {
-        try {
-            const updated = await apiFetch(`/tasks/${t.id}`, {
-                method: "PUT",
-                body: JSON.stringify({ completed: this.checked ? 1 : 0 }),
-            });
-            const span = li.querySelector("span");
-            if (span) span.style = updated.completed
-                ? "font-weight:500;text-decoration:line-through;opacity:.5"
-                : "font-weight:500";
-        } catch (e) { console.warn("Toggle:", e.message); }
-    });
-
-    // Delete
-    li.querySelector(".delete-task").addEventListener("click", async () => {
-        try {
-            await apiFetch(`/tasks/${t.id}`, { method: "DELETE" });
-            li.remove();
-        } catch (e) { console.warn("Delete:", e.message); }
-    });
-
-    list.appendChild(li);
-}
-
-
-window._origAddTask = null;
-function hookAddTask() {
-    if (typeof window.addTask === "function" && !window._addTaskHooked) {
-        window._addTaskHooked  = true;
-        window._origAddTask    = window.addTask;
-        window.addTask = async function () {
-            const user  = getUser();
-            const input = document.getElementById("taskInput");
-            const val   = input?.value.trim();
-            if (!val) return;
-
-            if (!user) {
-                
-                window._origAddTask();
-                return;
-            }
-
-            try {
-                const task = await apiFetch("/tasks", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        user_id:  user.id,
-                        title:    val,
-                        priority: "medium",
-                    }),
-                });
-                input.value = "";
-                renderTask(task);
-            } catch (e) {
-                console.warn("Add task failed:", e.message);
-                window._origAddTask();
-            }
-        };
-    }
-}
-
-//Analytics page
 async function initAnalytics() {
     const user = getUser();
     if (!user) return;
-
-    watchAndPatchHeader(user);
-
+    patchUI();
+    const timeframe = document.getElementById("analytics-timeframe")?.value || "weekly";
     try {
-        const stats = await apiFetch(`/stats?user_id=${user.id}`);
-        const vals  = document.querySelectorAll(".stat-card-value");
-        if (vals[0]) vals[0].textContent = (stats.total_study_time_minutes / 60).toFixed(1);
-        if (vals[1]) vals[1].textContent = stats.completed_tasks;
-    } catch (e) { console.warn("Analytics stats:", e.message); }
-
-    
-    try {
-        const sessions = await apiFetch(`/sessions?user_id=${user.id}`);
-        const byDay = [0, 0, 0, 0, 0, 0, 0]; // Sun-Sat
-        sessions.forEach(s => {
-            if (s.start_time) {
-                const d = new Date(s.start_time).getDay();
-                byDay[d] += (s.duration || 0) / 60;
-            }
-        });
-        // Reorder to Mon-Sun
-        const monSun = [byDay[1], byDay[2], byDay[3], byDay[4], byDay[5], byDay[6], byDay[0]]
-            .map(v => +v.toFixed(1));
-
-        
-        const tryPatchCharts = (attempts = 0) => {
-            if (attempts > 20) return;
-            const charts = Object.values(Chart.instances || {});
-            if (charts.length > 0) {
-                charts[0].data.datasets[0].data = monSun;
-                charts[0].update();
-            } else {
-                setTimeout(() => tryPatchCharts(attempts + 1), 200);
-            }
-        };
-        if (window.Chart) tryPatchCharts();
-        else setTimeout(() => tryPatchCharts(), 500);
-    } catch (e) { console.warn("Session chart:", e.message); }
+        const data = await apiFetch(`/analytics?user_id=${user.id}&timeframe=${timeframe}`);
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setVal("stat-total-focus", data.total_focus || 0);
+        setVal("stat-total-tasks", data.total_tasks || 0);
+        const trendF = document.getElementById("focus-trend");
+        const trendT = document.getElementById("tasks-trend");
+        if(trendF) trendF.textContent = `${data.focus_trend || '+0'}% This Week`;
+        if(trendT) trendT.textContent = `${data.tasks_trend || '+0'} This Week`;
+        renderCharts(data.chart_data || [0, 0, 0, 0, 0, 0, 0]);
+    } catch (e) { 
+        renderCharts([0, 0, 0, 0, 0, 0, 0]);
+    }
 }
 
-//Profile page
-async function initProfile() {
-    const user = getUser();
-    if (!user) return;
-
-    watchAndPatchHeader(user);
-
-    const initials     = (user.username || "?").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
-    const avatarLarge  = document.querySelector(".profile-avatar-large");
-    const nameH2       = document.querySelector(".profile-card h2");
-    const nameInput    = document.querySelector(".settings-item input[type=text]");
-    const emailInput   = document.querySelector(".settings-item input[type=email]");
-
-    if (avatarLarge) avatarLarge.textContent = initials;
-    if (nameH2)      nameH2.textContent      = user.username;
-    if (nameInput)   nameInput.value         = user.username;
-    if (emailInput)  emailInput.value        = user.email;
-
-    // Update profile button
-    const btn = document.querySelector(".btn-primary");
-    if (btn) {
-        btn.addEventListener("click", async () => {
-            const newName = nameInput?.value.trim();
-            if (!newName) return;
-            // Update locally (no dedicated endpoint, but keep it in sync)
-            const updated = { ...user, username: newName };
-            setUser(updated);
-            if (nameH2)    nameH2.textContent    = newName;
-            if (avatarLarge) {
-                const newInitials = newName.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
-                avatarLarge.textContent = newInitials;
-            }
-            btn.textContent = "✓ Saved!";
-            setTimeout(() => btn.textContent = "Update Profile", 2000);
+function renderCharts(chartData) {
+    const commonOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } };
+    const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    
+    const ctx1 = document.getElementById('chart')?.getContext('2d');
+    if (ctx1) {
+        if (window.myChart1) window.myChart1.destroy();
+        window.myChart1 = new Chart(ctx1, {
+            type: 'bar',
+            data: { labels: labels, datasets: [{ data: chartData, backgroundColor: '#06b6d4', borderRadius: 6 }] },
+            options: commonOpts
         });
     }
 
-    // Real stats
+    const ctx2 = document.getElementById('tasksCompletedChart')?.getContext('2d');
+    if (ctx2) {
+        if (window.myChart2) window.myChart2.destroy();
+        window.myChart2 = new Chart(ctx2, {
+            type: 'line',
+            data: { labels: labels, datasets: [{ data: chartData, borderColor: '#06b6d4', fill: true, tension: 0.4 }] },
+            options: commonOpts
+        });
+    }
+}
+
+async function initTasks() {
+    const user = getUser();
+    if (!user) return;
+    patchUI();
+    const list = document.getElementById("taskList");
+    if (!list) return;
     try {
-        const stats     = await apiFetch(`/stats?user_id=${user.id}`);
-        const streakEl  = document.querySelector(".streak-badge");
-        if (streakEl) {
-            streakEl.innerHTML = `<i class="fa-solid fa-fire"></i> ${stats.completed_tasks} Tasks Completed &nbsp;|&nbsp; ${stats.total_tasks} Total`;
-        }
-    } catch (e) { console.warn("Profile stats:", e.message); }
+        const tasks = await apiFetch(`/tasks?user_id=${user.id}`);
+        list.innerHTML = "";
+        tasks.forEach(t => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <div class="task-main">
+                    <input type="checkbox" ${t.completed ? "checked" : ""}>
+                    <div class="task-text">
+                        <span style="font-weight:500; ${t.completed ? 'text-decoration:line-through; opacity:0.5;' : ''}">${t.title}</span>
+                    </div>
+                </div>
+                <button class="delete-task"><i class="fa-regular fa-trash-can"></i></button>`;
+
+            li.querySelector("input").onchange = async (e) => {
+                const isChecked = e.target.checked;
+                await apiFetch(`/tasks/${t.id}`, {
+                    method: "PUT",
+                    body: JSON.stringify({ completed: isChecked ? 1 : 0 })
+                });
+                initTasks();
+                if (document.getElementById("stat-tasks-completed")) initDashboard();
+            };
+
+            li.querySelector(".delete-task").onclick = async () => {
+                await apiFetch(`/tasks/${t.id}`, { method: "DELETE" });
+                li.remove();
+                if (document.getElementById("stat-tasks-completed")) initDashboard();
+            };
+
+            list.appendChild(li);
+        });
+    } catch (e) { console.error(e); }
 }
 
-//Login page
-function initLogin() {
-    // If already logged in, go straight to dashboard
-    if (getUser()) { location.href = "/index.html"; return; }
+window.addTask = async () => {
+    const input = document.getElementById("taskInput");
+    const val = input?.value.trim();
+    const user = getUser();
+    if (!val || !user) return;
+    try {
+        await apiFetch("/tasks", {
+            method: "POST",
+            body: JSON.stringify({ user_id: user.id, title: val })
+        });
+        input.value = "";
+        initTasks();
+        if (document.getElementById("stat-tasks-completed")) initDashboard();
+    } catch (e) { console.error(e); }
+};
 
-    const form = document.querySelector("form");
+// YENİ KAYIT FONKSİYONU
+async function initRegister() {
+    const form = document.querySelector("form"); // register.html içindeki form
     if (!form) return;
-
     form.onsubmit = async (e) => {
         e.preventDefault();
-        const email    = form.querySelector("input[type=email]").value.trim();
-        const password = form.querySelector("input[type=password]").value.trim();
-        const btn      = form.querySelector("button[type=submit]");
-        btn.textContent = "Signing in…";
-        btn.disabled    = true;
-        try {
-            const user = await apiFetch("/login", {
-                method: "POST",
-                body: JSON.stringify({ email, password }),
-            });
-            setUser(user);
-            location.href = "/index.html";
-        } catch (err) {
-            btn.textContent = "Sign In";
-            btn.disabled    = false;
-            showError(form, "Invalid email or password. Please try again.");
-        }
-    };
-}
-
-//Register page
-function initRegister() {
-    if (getUser()) { location.href = "/index.html"; return; }
-
-    const form = document.querySelector("form");
-    if (!form) return;
-
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        const inputs   = form.querySelectorAll("input");
-        const username = inputs[0].value.trim();
-        const email    = inputs[1].value.trim();
-        const password = inputs[2].value.trim();
-        const btn      = form.querySelector("button[type=submit]");
-        btn.textContent = "Creating account…";
-        btn.disabled    = true;
+        const username = form.querySelector("input[type=text]").value;
+        const email = form.querySelector("input[type=email]").value;
+        const password = form.querySelector("input[type=password]").value;
+        const btn = form.querySelector("button");
+        btn.textContent = "Creating Account...";
         try {
             await apiFetch("/register", {
                 method: "POST",
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({ username, email, password })
             });
-            showError(form, "✅ Account created! Redirecting to login…", "success");
-            setTimeout(() => location.href = "/login.html", 1500);
+            alert("Account created! Please sign in.");
+            location.href = "login.html";
         } catch (err) {
             btn.textContent = "Join Now";
-            btn.disabled    = false;
-            showError(form, err.message);
+            alert(err.message);
         }
     };
 }
 
-//Utilities
-function showError(form, msg, type = "error") {
-    let el = form.querySelector(".api-msg");
-    if (!el) {
-        el = document.createElement("p");
-        el.className = "api-msg";
-        el.style = `text-align:center;margin-top:12px;font-size:.9rem;font-weight:600;padding:10px;border-radius:8px`;
-        form.appendChild(el);
+async function initProfile() {
+    const user = getUser();
+    if (!user) return;
+    patchUI();
+    const nameInput = document.getElementById("profile-name");
+    const emailInput = document.getElementById("profile-email");
+    const btn = document.getElementById("update-profile-btn");
+    if (nameInput) nameInput.value = user.username;
+    if (emailInput) emailInput.value = user.email;
+    if (btn) {
+        btn.onclick = () => {
+            const newName = nameInput.value.trim();
+            if (!newName) return;
+            const updated = { ...user, username: newName, email: emailInput.value };
+            setUser(updated);
+            patchUI();
+            btn.textContent = "✓ Saved!";
+            setTimeout(() => { btn.textContent = "Update Profile"; }, 2000);
+        };
     }
-    el.textContent = msg;
-    el.style.color = type === "success" ? "#16a34a" : "#dc2626";
-    el.style.background = type === "success" ? "#f0fdf4" : "#fef2f2";
 }
 
-function escHtml(str) {
-    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+async function initSettings() {
+    const user = getUser();
+    if (!user) return;
+    patchUI();
+    const nameInput = document.getElementById("settings-name");
+    const emailInput = document.getElementById("settings-email");
+    const focusInput = document.getElementById("focusTime");
+    const breakInput = document.getElementById("breakTime");
+    const btn = document.getElementById("save-settings-btn");
+    if (nameInput) nameInput.value = user.username;
+    if (emailInput) emailInput.value = user.email;
+    if (focusInput) focusInput.value = localStorage.getItem("timer_focus") || 25;
+    if (breakInput) breakInput.value = localStorage.getItem("timer_break") || 5;
+    if (btn) {
+        btn.onclick = () => {
+            const updated = { ...user, username: nameInput.value.trim(), email: emailInput.value.trim() };
+            setUser(updated);
+            localStorage.setItem("timer_focus", focusInput.value);
+            localStorage.setItem("timer_break", breakInput.value);
+            patchUI();
+            btn.textContent = "✓ Saved!";
+            setTimeout(() => { btn.textContent = "Save Settings"; }, 2000);
+        };
+    }
 }
 
-function cap(str) {
-    return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+async function initLogin() {
+    const form = document.getElementById("loginForm");
+    if (!form) return;
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const email = form.querySelector("input[type=email]").value;
+        const password = form.querySelector("input[type=password]").value;
+        const btn = form.querySelector("button");
+        btn.textContent = "Logging in...";
+        try {
+            const user = await apiFetch("/login", {
+                method: "POST",
+                body: JSON.stringify({ email, password })
+            });
+            setUser(user);
+            location.href = "index.html";
+        } catch (err) {
+            btn.textContent = "Sign In";
+            alert(err.message);
+        }
+    };
 }
 
-function formatDate(dateStr) {
-    if (!dateStr) return "";
-    try {
-        return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
-            month: "long", day: "numeric", year: "numeric"
-        });
-    } catch { return dateStr; }
-}
-
-//Auto-router 
 document.addEventListener("DOMContentLoaded", () => {
-    const page = location.pathname.split("/").pop() || "login.html";
-
-    if (page === "login.html"     || page === "login")    { initLogin();    return; }
-    if (page === "register.html"  || page === "register") { initRegister(); return; }
-
-    // All pages below require auth
-    if (page === "index.html"     || page === "")         initDashboard();
-    else if (page === "tasks.html"  || page === "tasks")  initTasks();
-    else if (page === "analytics.html")                   initAnalytics();
-    else if (page === "profile.html")                     initProfile();
-
-    // Hook addTask after tasks.js has defined it
-    hookAddTask();
+    const path = location.pathname.split("/").pop() || "index.html";
+    if (path === "login.html") {
+        initLogin();
+    } else if (path === "register.html") {
+        initRegister(); // Register sayfasını başlatan ekleme
+    } else if (path === "index.html" || path === "" || path === "index.html#") {
+        initDashboard();
+    } else if (path === "analytics.html") {
+        initAnalytics();
+        document.getElementById("analytics-timeframe")?.addEventListener("change", initAnalytics);
+    } else if (path === "profile.html") {
+        initProfile();
+    } else if (path === "settings.html") {
+        initSettings();
+    } else if (path === "tasks.html") {
+        initTasks();
+    } else {
+        patchUI();
+    }
+    const placeholder = document.getElementById("header-placeholder");
+    if (placeholder) {
+        new MutationObserver(() => patchUI()).observe(placeholder, { childList: true, subtree: true });
+    }
 });

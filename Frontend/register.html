@@ -7,21 +7,11 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        
         .auth-body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: var(--bg-main); padding: 20px; }
         .auth-card { background: var(--bg-card); padding: 40px; border-radius: 24px; box-shadow: var(--shadow-md); width: 100%; max-width: 420px; }
         .auth-header { text-align: center; margin-bottom: 32px; }
         .auth-header .logo-icon { margin: 0 auto 12px; width: 48px; height: 48px; font-size: 1.5rem; }
-        .auth-header h2 { color: var(--text-main); font-weight: 800; font-size: 1.75rem; }
-        .auth-header p { color: var(--text-muted); font-size: 0.95rem; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); }
-        .input-wrapper { position: relative; }
-        .input-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-        .input-wrapper input { width: 100%; padding: 12px 16px 12px 48px; border: 1px solid var(--border); border-radius: 12px; outline: none; }
         .btn-primary { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        .auth-footer { text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted); }
-        .auth-footer a { color: var(--primary); text-decoration: none; font-weight: 700; }
     </style>
 </head>
 <body class="auth-body">
@@ -31,33 +21,16 @@
             <h2>Create Account</h2>
             <p>Start your productivity journey today</p>
         </div>
-        <form onsubmit="event.preventDefault(); location.href='login.html'">
-            <div class="input-group">
-                <label>Full Name</label>
-                <div class="input-wrapper">
-                    <i class="fa-regular fa-user"></i>
-                    <input type="text" placeholder="John Doe" required>
-                </div>
-            </div>
-            <div class="input-group">
-                <label>Email Address</label>
-                <div class="input-wrapper">
-                    <i class="fa-regular fa-envelope"></i>
-                    <input type="email" placeholder="name@university.edu" required>
-                </div>
-            </div>
-            <div class="input-group">
-                <label>Password</label>
-                <div class="input-wrapper">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" placeholder="••••••••" required>
-                </div>
-            </div>
-            <button type="submit" class="btn-primary">Join Now</button>
+        <form id="registerForm">
+            <div class="settings-item"><label>Full Name</label><input type="text" id="regName" placeholder="John Doe" required></div>
+            <div class="settings-item"><label>Email Address</label><input type="email" id="regEmail" placeholder="name@university.edu" required></div>
+            <div class="settings-item"><label>Password</label><input type="password" id="regPass" placeholder="••••••••" required></div>
+            <button type="submit" class="btn-primary" style="margin-top:20px">Join Now</button>
         </form>
-        <div class="auth-footer">
+        <div class="auth-footer" style="text-align:center; margin-top:20px">
             Already have an account? <a href="login.html">Sign In</a>
         </div>
     </div>
+    <script src="js/api.js"></script>
 </body>
 </html>

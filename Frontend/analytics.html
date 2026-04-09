@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>StudySprint - Analytics</title>
@@ -14,16 +14,28 @@
         <section class="page active">
             <div class="analytics-header">
                 <h1>Analytics Dashboard</h1>
-                <div class="date-filter">Apr 1 - Apr 7, 2026 <i class="fa-solid fa-chevron-down"></i></div>
+                <select id="analytics-timeframe" class="date-filter" style="border:none; background:none; font-family:inherit; cursor:pointer;">
+                    <option value="weekly">Weekly View</option>
+                    <option value="monthly">Monthly View</option>
+                    <option value="yearly">Yearly View</option>
+                </select>
             </div>
             <div class="stats-grid-analytics">
                 <div class="stat-card-advanced">
-                    <div class="stat-card-header"><div class="stat-card-icon icon-yellow"><i class="fa-regular fa-clock"></i></div><span class="stat-card-title">Focus Hours</span></div>
-                    <div class="stat-card-value">29.4</div><div class="stat-card-subtext positive">+12% This Week</div>
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon icon-yellow"><i class="fa-regular fa-clock"></i></div>
+                        <span class="stat-card-title">Focus Hours</span>
+                    </div>
+                    <div class="stat-card-value" id="stat-total-focus">0</div>
+                    <div class="stat-card-subtext positive" id="focus-trend">+0% This Week</div>
                 </div>
                 <div class="stat-card-advanced">
-                    <div class="stat-card-header"><div class="stat-card-icon icon-blue"><i class="fa-regular fa-circle-check"></i></div><span class="stat-card-title">Tasks Done</span></div>
-                    <div class="stat-card-value">34</div><div class="stat-card-subtext positive">+2 This Week</div>
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon icon-blue"><i class="fa-regular fa-circle-check"></i></div>
+                        <span class="stat-card-title">Tasks Done</span>
+                    </div>
+                    <div class="stat-card-value" id="stat-total-tasks">0</div>
+                    <div class="stat-card-subtext positive" id="tasks-trend">+0 This Week</div>
                 </div>
             </div>
             <div class="charts-grid-analytics">
@@ -35,25 +47,6 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="js/loader.js"></script>
-<script>
-window.addEventListener('load', () => {
-    const ctx1 = document.getElementById('chart')?.getContext('2d');
-    if (ctx1) {
-        new Chart(ctx1, {
-            type: 'bar',
-            data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ data: [4, 3, 5, 4, 6, 2, 3], backgroundColor: '#06b6d4', borderRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-    }
-    const ctx2 = document.getElementById('tasksCompletedChart')?.getContext('2d');
-    if (ctx2) {
-        new Chart(ctx2, {
-            type: 'line',
-            data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ data: [3, 5, 2, 6, 8, 4, 5], borderColor: '#06b6d4', fill: true, tension: 0.4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-    }
-});
-</script>
+<script src="js/api.js"></script>
 </body>
 </html>

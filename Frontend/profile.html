@@ -28,23 +28,29 @@
                 <div class="profile-card">
                     <div class="profile-avatar-large">JD</div>
                     <div style="text-align: center;">
-                        <h2>John Doe</h2>
-                        <p style="color: var(--text-muted);">Computer Science</p>
+                        <h2 id="display-name">John Doe</h2>
                     </div>
-                    <div class="streak-badge"><i class="fa-solid fa-fire"></i> 5 Days Streak</div>
+                    <div class="streak-badge"><i class="fa-solid fa-fire"></i> <span id="streak-info">Loading stats...</span></div>
                 </div>
                 <div class="profile-details">
                     <div class="card-header">Account Information</div>
                     <div class="info-row">
-                        <div class="settings-item"><label>Full Name</label><input type="text" value="John Doe"></div>
-                        <div class="settings-item"><label>Email</label><input type="email" value="john.doe@university.edu"></div>
+                        <div class="settings-item">
+                            <label>Full Name</label>
+                            <input type="text" id="profile-name" value="John Doe">
+                        </div>
+                        <div class="settings-item">
+                            <label>Email</label>
+                            <input type="email" id="profile-email" value="john.doe@university.edu">
+                        </div>
                     </div>
-                    <button class="btn-primary" style="margin-top: 24px; width: auto; padding: 12px 30px;">Update Profile</button>
+                    <button id="update-profile-btn" class="btn-primary" style="margin-top: 24px; width: auto; padding: 12px 30px;">Update Profile</button>
                 </div>
             </div>
         </section>
     </main>
 </div>
 <script src="js/loader.js"></script>
+<script src="js/api.js"></script>
 </body>
 </html>

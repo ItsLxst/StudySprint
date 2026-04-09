@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,41 +15,49 @@
         <div id="header-placeholder"></div>
         <section class="page active">
             <div class="page-header">
-                <h1>Good Evening, John! 👋</h1>
+                <h1>Welcome back! 👋</h1>
                 <p>Ready to crush your goals today?</p>
             </div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon icon-blue"><i class="fa-regular fa-clock"></i></div>
-                    <div class="stat-content"><h3>3.5</h3><p>Focus Hours Today</p></div>
+                    <div class="stat-content">
+                        <h3 id="stat-focus-hours">0</h3>
+                        <p>Focus Hours Today</p>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon icon-green"><i class="fa-regular fa-circle-check"></i></div>
-                    <div class="stat-content"><h3>12</h3><p>Tasks Completed</p></div>
+                    <div class="stat-content">
+                        <h3 id="stat-tasks-completed">0</h3>
+                        <p>Tasks Completed</p>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon icon-orange"><i class="fa-solid fa-bolt"></i></div>
-                    <div class="stat-content"><h3>5 days</h3><p>Current Streak</p></div>
+                    <div class="stat-content">
+                        <h3 id="stat-streak">0 days</h3>
+                        <p>Current Streak</p>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon icon-purple"><i class="fa-solid fa-chart-line"></i></div>
-                    <div class="stat-content"><h3>+24%</h3><p>Weekly Progress</p></div>
+                    <div class="stat-content">
+                        <h3 id="stat-progress">0%</h3>
+                        <p>Weekly Progress</p>
+                    </div>
                 </div>
             </div>
             <div class="dashboard-row">
-                <div class="focus-today-card">
+                <div class="focus-today-card" id="focus-of-the-day-card">
                     <div class="card-header"><i class="fa-solid fa-bolt"></i> Focus of the Day</div>
-                    <div class="focus-content">
-                        <h4>Complete Math Assignment</h4>
-                        <p>Finish all calculus problems for Chapter 5 and review integration techniques.</p>
-                        <div class="focus-meta"><span>Estimated: 2 hours</span><span class="due-tag">Due: Today</span></div>
+                    <div class="focus-content" id="focus-task-container">
+                        <p>No active tasks. Start by adding one!</p>
                     </div>
                 </div>
                 <div class="upcoming-card">
-                    <div class="card-header"><i class="fa-regular fa-calendar-check"></i> Upcoming Deadlines</div>
-                    <ul class="deadline-list">
-                        <li><div class="deadline-info"><span class="title">Math Assignment</span><span class="date">April 7, 2026</span></div><span class="priority high">High</span></li>
-                        <li><div class="deadline-info"><span class="title">History Essay</span><span class="date">April 10, 2026</span></div><span class="priority medium">Medium</span></li>
+                    <div class="card-header"><i class="fa-regular fa-calendar-check"></i> Task List Overview</div>
+                    <ul class="deadline-list" id="deadline-list">
                     </ul>
                 </div>
             </div>
@@ -57,5 +65,6 @@
     </main>
 </div>
 <script src="js/loader.js"></script>
+<script src="js/api.js"></script>
 </body>
 </html>
