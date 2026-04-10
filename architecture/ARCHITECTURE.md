@@ -30,7 +30,49 @@
 ---
 
 ## List of Figures
-* *To be added (e.g., Logical Architecture Diagram, Database Schema).*
+* Figure 1: Logical Architecture Diagram
+* Figure 2: Physical Architecture Diagram
+* Figure 3: Sequence Diagram
+* Figure 4: Database Schema Diagram
+
+---
+
+## Logical Architecture Diagram
+
+* figures/logical_architecture.jpeg
+
+Figure 1: Logical Architecture Diagram of StudySprint
+Figure 1 illustrates the logical architecture of the StudySprint system,
+showing the interaction between the frontend, backend, and database layers.
+
+
+## Physical Architecture
+
+* figures/physical_architecture.jpeg
+
+Figure 2: Physical Architecture Diagram of StudySprint
+Figure 2 illustrates the physical deployment of the StudySprint system.
+The frontend runs in a web browser, while the backend and SQLite database
+run locally on the same machine during development.
+
+
+## Sequence Diagram
+
+* figures/sequence_diagram.jpeg
+
+Figure 3: Sequence Diagram for Adding a Task
+Figure 3 illustrates the sequence diagram of the StudySprint system for the
+“Add Task” scenario. The diagram shows the interaction order between the user,
+frontend, backend, and database, including request handling, data validation,
+and response flow during task creation.
+
+## Database Schema
+
+* figures/database_schema.png
+
+Figure 4 : Database Schema
+Figure 4 illustrates the database schema of StudySprint, showing the
+users, tasks, and study_sessions tables and their relationships.
 
 ---
 
@@ -58,6 +100,7 @@ The system has three main parts:
 1.  **Frontend (Client):** Handles the user interface. Built with HTML, CSS, and JavaScript.
 2.  **Backend (Server):** Handles business logic. Built with Python as a REST API.
 3.  **Database:** Stores user data, tasks, and study sessions. Uses SQLite.
+
 
 ## 6. Process Architecture
 The application works synchronously. 
