@@ -40,7 +40,7 @@ function startTimer() {
             clearInterval(timer);
             isRunning = false;
             btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-            alert("Süre doldu!");
+            alert("Time's up!");
         }
     }, 1000);
 }

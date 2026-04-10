@@ -2,20 +2,24 @@ async function loadComponent(elementId, filePath) {
     try {
         const response = await fetch(filePath);
         const content = await response.text();
-        document.getElementById(elementId).innerHTML = content;
+        const placeholder = document.getElementById(elementId);
+        if (!placeholder) return;
+        
+        placeholder.innerHTML = content;
+        
         if (elementId === 'sidebar-placeholder') {
-            const path = window.location.pathname.split("/").pop();
+            const path = window.location.pathname.split("/").pop() || "index.html";
             document.querySelectorAll(".nav-item").forEach(item => {
                 const text = item.querySelector("span")?.innerText.toLowerCase();
                 if (path === "index.html" || path === "") {
                     if (text === "dashboard") item.classList.add("active");
-                } else if (path.includes(text?.split(" ")[0])) {
+                } else if (text && path.includes(text.split(" ")[0])) {
                     item.classList.add("active");
                 }
             });
         }
     } catch (error) {
-        console.error(error);
+        console.error("Component loading error:", error);
     }
 }
 
