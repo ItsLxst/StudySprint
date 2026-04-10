@@ -39,40 +39,29 @@
 
 ## Logical Architecture Diagram
 
-* figures/logical_architecture.jpeg
+![Figure 1](./figures/1_logical_architecture.jpeg)
 
-Figure 1: Logical Architecture Diagram of StudySprint
-Figure 1 illustrates the logical architecture of the StudySprint system,
-showing the interaction between the frontend, backend, and database layers.
+**Figure 1:** Logical Architecture Diagram of StudySprint. Shows the interaction between the frontend, backend, and database layers.
 
 
 ## Physical Architecture
 
-* figures/physical_architecture.jpeg
+![Figure 2](./figures/2_physical_architecture.jpeg)
 
-Figure 2: Physical Architecture Diagram of StudySprint
-Figure 2 illustrates the physical deployment of the StudySprint system.
-The frontend runs in a web browser, while the backend and SQLite database
-run locally on the same machine during development.
+**Figure 2:** Physical Architecture Diagram of StudySprint. Illustrates the physical deployment of the StudySprint system. The frontend runs in a web browser, while the backend and SQLite database run locally on the same machine during development.
 
 
 ## Sequence Diagram
 
-* figures/sequence_diagram.jpeg
+![Figure 3](./figures/3_sequence_diagram.jpeg)
 
-Figure 3: Sequence Diagram for Adding a Task
-Figure 3 illustrates the sequence diagram of the StudySprint system for the
-“Add Task” scenario. The diagram shows the interaction order between the user,
-frontend, backend, and database, including request handling, data validation,
-and response flow during task creation.
+**Figure 3:** Sequence Diagram for Adding a Task. Illustrates the sequence diagram of the StudySprint system for the "Add Task" scenario. Shows the interaction order between the user, frontend, backend, and database, including request handling, data validation, and response flow during task creation.
 
 ## Database Schema
 
-* figures/database_schema.png
+![Figure 4](./figures/4_database_schema.png)
 
-Figure 4 : Database Schema
-Figure 4 illustrates the database schema of StudySprint, showing the
-users, tasks, and study_sessions tables and their relationships.
+**Figure 4:** Database Schema of StudySprint. Shows the users, tasks, and study_sessions tables and their relationships.
 
 ---
 

@@ -19,4 +19,4 @@ The system allows users to create and track tasks, record study sessions, and vi
 
 ## 📋 Architecture
 
-🔗 Click to view architecture: [ARCHITECTURE.md](./ARCHITECTURE.md)
+🔗 Click to view architecture: [ARCHITECTURE.md](./architecture/ARCHITECTURE.md)
