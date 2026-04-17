@@ -1,4 +1,3 @@
-# Detailed architectural information will be added as the development process progresses.
 # ARCHITECTURE.md
 
 # Title Page
@@ -31,37 +30,9 @@
 
 ## List of Figures
 * Figure 1: Logical Architecture Diagram
-* Figure 2: Physical Architecture Diagram
-* Figure 3: Sequence Diagram
-* Figure 4: Database Schema Diagram
-
----
-
-## Logical Architecture Diagram
-
-![Figure 1](./figures/1_logical_architecture.jpeg)
-
-**Figure 1:** Logical Architecture Diagram of StudySprint. Shows the interaction between the frontend, backend, and database layers.
-
-
-## Physical Architecture
-
-![Figure 2](./figures/2_physical_architecture.jpeg)
-
-**Figure 2:** Physical Architecture Diagram of StudySprint. Illustrates the physical deployment of the StudySprint system. The frontend runs in a web browser, while the backend and SQLite database run locally on the same machine during development.
-
-
-## Sequence Diagram
-
-![Figure 3](./figures/3_sequence_diagram.jpeg)
-
-**Figure 3:** Sequence Diagram for Adding a Task. Illustrates the sequence diagram of the StudySprint system for the "Add Task" scenario. Shows the interaction order between the user, frontend, backend, and database, including request handling, data validation, and response flow during task creation.
-
-## Database Schema
-
-![Figure 4](./figures/4_database_schema.png)
-
-**Figure 4:** Database Schema of StudySprint. Shows the users, tasks, and study_sessions tables and their relationships.
+* Figure 2: Database Schema Diagram 
+* Figure 3: Physical Architecture Diagram
+* Figure 4:  Sequence Diagram
 
 ---
 
@@ -73,7 +44,7 @@ This document explains the software architecture of StudySprint. StudySprint is 
 * Python and SQLite Official Documentation
 
 ## 3. Software Architecture
-The system uses a Client-Server architecture. We separate the frontend (user interface) from the backend (data and logic). This makes the system easier to build and maintain.
+The system uses a Client-Server architecture. We separate the frontend (user interface) from the backend (data and logic). This makes the system easier to build and maintain.The REST API follows a simple and consistent structure to make communication between frontend and backend predictable and easy to debug.
 
 ## 4. Architectural Goals & Constraints
 **Goals:**
@@ -89,7 +60,17 @@ The system has three main parts:
 1.  **Frontend (Client):** Handles the user interface. Built with HTML, CSS, and JavaScript.
 2.  **Backend (Server):** Handles business logic. Built with Python as a REST API.
 3.  **Database:** Stores user data, tasks, and study sessions. Uses SQLite.
+Each layer is designed to work independently, which allows easier debugging and future scalability if new features are added.
 
+## Logical Architecture Diagram
+![Figure 1](./figures/1_logical_architecture.jpeg)
+
+**Figure 1:** Logical Architecture Diagram of StudySprint. Shows the interaction between the frontend, backend, and database layers.
+
+## Database Schema Diagram
+![Figure 2](./figures/2_database_schema.png)
+
+**Figure 2:** Database Schema of StudySprint. Shows the users, tasks, and study_sessions tables and their relationships.
 
 ## 6. Process Architecture
 The application works synchronously. 
@@ -98,6 +79,7 @@ The application works synchronously.
 3. The backend processes the request and updates the SQLite database.
 4. The backend sends a JSON response back to the frontend.
 5. The frontend updates the screen.
+6. The system ensures that the frontend only updates the UI after receiving a successful response from the backend.
 
 ## 7. Development Architecture
 * **Version Control:** Git and GitHub are used to track changes.
@@ -109,6 +91,13 @@ For development and testing, the system runs locally on the developers' computer
 * A local web server runs the Python backend.
 * A standard web browser runs the frontend.
 * The SQLite database is a local file on the server.
+* The backend and database communicate directly through local file access, ensuring fast data operations during development.
+
+## Physical Architecture Diagram
+![Figure 3](./figures/3_physical_architecture.jpeg)
+
+**Figure 3:** Physical Architecture Diagram of StudySprint. Illustrates the physical deployment of the StudySprint system. The frontend runs in a web browser, while the backend and SQLite database run locally on the same machine during development.
+
 
 ## 9. Scenarios
 **Example Scenario: Adding a Task**
@@ -118,14 +107,23 @@ For development and testing, the system runs locally on the developers' computer
 4. Backend replies with a success message.
 5. Frontend shows the new task on the screen.
 
+## Sequence Diagram
+![Figure 4](./figures/4_sequence_diagram.jpeg)
+
+**Figure 4:** Sequence Diagram for Adding a Task. Illustrates the sequence diagram of the StudySprint system for the "Add Task" scenario. Shows the interaction order between the user, frontend, backend, and database, including request handling, data validation, and response flow during task creation.
+
+
 ## 10. Size and Performance
 * **Size:** This is a small-scale application meant for individual student use.
 * **Performance:** The REST API must reply quickly. Page loads and button clicks should take less than 1 second. SQLite is fast enough for our data size.
+* **Response Time:** The system is optimized to provide fast responses for basic operations such as adding and retrieving tasks.
+* **Scalability:** The system is designed to handle more users in the future with minimal changes.
 
 ## 11. Quality
 * **Reliability:** The Pomodoro timer must be accurate and not reset randomly.
 * **Usability:** The interface must be clear and simple for students.
 * **Maintainability:** The code must be well-commented so team members can read it easily.
+* **Consistency:** The system should behave the same way across different browsers to ensure a stable user experience.
 
 ---
 
