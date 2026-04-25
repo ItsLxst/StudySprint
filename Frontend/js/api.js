@@ -93,8 +93,8 @@ async function initDashboard() {
         const stats = await apiFetch(`/stats?user_id=${user.id}`);
         const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
         
-        setVal("stat-focus-hours", stats.focus_hours || 0);
-        setVal("stat-tasks-completed", stats.tasks_completed || 0);
+        setVal("stat-focus-hours", stats.total_study_time_minutes || 0);
+        setVal("stat-tasks-completed", stats.completed_tasks || 0);
         setVal("stat-streak", (stats.streak || 0) + " days");
         setVal("stat-progress", (stats.progress >= 0 ? "+" : "") + (stats.progress || 0) + "%");
 
@@ -122,24 +122,34 @@ async function initAnalytics() {
     const user = getUser();
     if (!user) return;
     patchUI();
-    const timeframe = document.getElementById("analytics-timeframe")?.value || "weekly";
     try {
-        const data = await apiFetch(`/analytics?user_id=${user.id}&timeframe=${timeframe}`);
-        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-        setVal("stat-total-focus", data.total_focus || 0);
-        setVal("stat-total-tasks", data.total_tasks || 0);
-        const trendF = document.getElementById("focus-trend");
-        const trendT = document.getElementById("tasks-trend");
-        if(trendF) trendF.textContent = `${data.focus_trend || '+0'}% This Week`;
-        if(trendT) trendT.textContent = `${data.tasks_trend || '+0'} This Week`;
-        renderCharts(data.chart_data || [0, 0, 0, 0, 0, 0, 0]);
+        const data = await apiFetch(`/stats?user_id=${user.id}`);
+        
+        const setVal = (id, val) => { 
+            const el = document.getElementById(id); 
+            if (el) el.textContent = val; 
+        };
+
+        setVal("stat-total-focus", data.total_study_time_minutes || 0);
+        setVal("stat-total-tasks", data.completed_tasks || 0);
+
+        const focusData = data.daily_focus || [0,0,0,0,0,0,0];
+        const taskData = data.daily_tasks || [0,0,0,0,0,0,0];
+
+        renderCharts(focusData, taskData); // İki listeyi de gönder
     } catch (e) { 
-        renderCharts([0, 0, 0, 0, 0, 0, 0]);
+        console.error("Analytics Error:", e);
+        renderCharts([0,0,0,0,0,0,0], [0,0,0,0,0,0,0]);
     }
 }
 
-function renderCharts(chartData) {
-    const commonOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } };
+function renderCharts(focusData, taskData) {
+    const commonOpts = { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        plugins: { legend: { display: false } }, 
+        scales: { y: { beginAtZero: true } } 
+    };
     const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     
     const ctx1 = document.getElementById('chart')?.getContext('2d');
@@ -147,7 +157,15 @@ function renderCharts(chartData) {
         if (window.myChart1) window.myChart1.destroy();
         window.myChart1 = new Chart(ctx1, {
             type: 'bar',
-            data: { labels: labels, datasets: [{ data: chartData, backgroundColor: '#06b6d4', borderRadius: 6 }] },
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                    label: 'Focus Minutes',
+                    data: focusData, 
+                    backgroundColor: '#06b6d4', 
+                    borderRadius: 6 
+                }] 
+            },
             options: commonOpts
         });
     }
@@ -157,7 +175,17 @@ function renderCharts(chartData) {
         if (window.myChart2) window.myChart2.destroy();
         window.myChart2 = new Chart(ctx2, {
             type: 'line',
-            data: { labels: labels, datasets: [{ data: chartData, borderColor: '#06b6d4', fill: true, tension: 0.4 }] },
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                    label: 'Tasks Done',
+                    data: taskData, 
+                    borderColor: '#06b6d4', 
+                    backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                    fill: true, 
+                    tension: 0.4 
+                }] 
+            },
             options: commonOpts
         });
     }
@@ -190,12 +218,22 @@ async function initTasks() {
                     body: JSON.stringify({ completed: isChecked ? 1 : 0 })
                 });
                 initTasks();
-                if (document.getElementById("stat-tasks-completed")) initDashboard();
+
+                if (location.pathname.includes("analytics.html")) {
+                initAnalytics();
+                }
+
+                if (document.getElementById("stat-tasks-completed")) {
+                initDashboard();
+        }
             };
 
             li.querySelector(".delete-task").onclick = async () => {
                 await apiFetch(`/tasks/${t.id}`, { method: "DELETE" });
                 li.remove();
+                if (location.pathname.includes("analytics.html")) {
+            initAnalytics();
+            }
                 if (document.getElementById("stat-tasks-completed")) initDashboard();
             };
 
@@ -216,11 +254,18 @@ window.addTask = async () => {
         });
         input.value = "";
         initTasks();
-        if (document.getElementById("stat-tasks-completed")) initDashboard();
+
+        if (location.pathname.includes("analytics.html")) {
+        initAnalytics();
+        }
+
+        if (document.getElementById("stat-tasks-completed")) {
+        initDashboard();
+        }
     } catch (e) { console.error(e); }
 };
 
-// YENİ KAYIT FONKSİYONU
+// kayıt fonk
 async function initRegister() {
     const form = document.querySelector("form"); // register.html içindeki form
     if (!form) return;
