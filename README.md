@@ -1,5 +1,10 @@
 # StudySprint
 
+## Links
+
+GitHub repository URL: https://github.com/ItsLxst/StudySprint
+YouTube URL: https://youtu.be/Il4qoEPTz08
+
 ## 👥 Team Details
 
 | Student ID   | Name            | GitHub Username |
